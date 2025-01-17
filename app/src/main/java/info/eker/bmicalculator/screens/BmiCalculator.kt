@@ -3,6 +3,9 @@ package info.eker.bmicalculator.screens
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.ScrollableState
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,6 +23,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,8 +35,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import info.eker.bmicalculator.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -40,7 +46,7 @@ import info.eker.bmicalculator.R
 fun BmiCalculator(modifier: Modifier = Modifier) {
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(
+            TopAppBar(
                 title = {
                     Text(text = "BMI Calculator")
                 }
@@ -61,9 +67,9 @@ fun BmiCalculator(modifier: Modifier = Modifier) {
                 painter = painterResource(R.drawable.bmi_logo),
                 contentDescription = "",
                 contentScale = ContentScale.FillWidth,
-                modifier = Modifier.width(120.dp)
+                modifier = Modifier.width(100.dp)
             )
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(20.dp))
             EditNumberField(
                 label = "Weight (in kg)",
                 keyboardType = KeyboardType.Number,
@@ -73,7 +79,7 @@ fun BmiCalculator(modifier: Modifier = Modifier) {
                 onValueChangue = {
                     weight.value = it
                 })
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(10.dp))
             EditNumberField(
                 label = "Height (in meter)",
                 keyboardType = KeyboardType.Number,
@@ -84,7 +90,7 @@ fun BmiCalculator(modifier: Modifier = Modifier) {
                 },
                 imeAction = ImeAction.Done
             )
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(10.dp))
             OutlinedButton(
                 onClick = {
                     bmi.value = BmiCalculate(
@@ -138,16 +144,28 @@ fun TableContentData(
     status: String,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Text(text = "BMI value: $bmi")
+        Spacer(Modifier.height(20.dp))
         for (key in statusMap.keys) {
-            Row(modifier = modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-                horizontalArrangement = Arrangement.SpaceAround
+            Row(
+                modifier = Modifier
+                    .padding(horizontal = 18.dp)
+                    .fillMaxWidth()
+                    .background(
+                        if (status == key) Color.LightGray else Color.Transparent
+                    )
             ) {
-                Text(text = key, modifier = Modifier.weight(1f))
-                Text(text = statusMap[key]!!, modifier = Modifier.weight(1f))
+                Text(text = key, fontSize = 12.sp, modifier = Modifier.weight(2f))
+                Text(
+                    text = statusMap[key]!!,
+                    fontSize = 12.sp,
+                    textAlign = TextAlign.End,
+                    modifier = Modifier.weight(1f)
+                )
             }
         }
     }
@@ -170,7 +188,7 @@ object BMIStatus {
     const val UNDERWEIGHT_SEVERE = "Underweight (Severe thinness)"
     const val UNDERWEIGHT_MODERATE = "Underweight (Moderate thinness)"
     const val UNDERWEIGHT_MILD = "Underweight (Mild thinness)"
-    const val NORMAL = "Underweight (Severe thinness)"
+    const val NORMAL = "Normal"
     const val OVERWEIGHT = "Overweight (Pre-Obese)"
     const val OBESE_I = "Obese (Class I)"
     const val OBESE_II = "Obese (Class II)"
@@ -186,5 +204,5 @@ val statusMap = mapOf(
     BMIStatus.OVERWEIGHT to "25.0 - 29.9",
     BMIStatus.OBESE_I to "30.0 - 34.9",
     BMIStatus.OBESE_II to "35.0 - 39.9",
-    BMIStatus.OBESE_III to "40 and above"
+    BMIStatus.OBESE_III to "40 and above",
 )
